@@ -70,12 +70,13 @@
 .psa-entry:hover { border-color: #c99178; }
 .psa-entry strong, .psa-entry small { display: block; }
 .psa-entry small { margin-top: 4px; color: var(--secondary); font-size: .875rem; }
-.psa-entry-icon, .psa-hero-mark { display: grid; flex: none; place-items: center; color: var(--accent); background: var(--accent-soft); }
-.psa-entry-icon { width: 45px; height: 45px; border-radius: 14px; }
+.psa-brand-logos { display: inline-flex; align-items: center; gap: 5px; }
+.psa-entry-icon, .psa-hero-mark { flex: none; color: var(--accent); background: var(--accent-soft); }
+.psa-entry-icon { min-height: 45px; padding-inline: 8px; border-radius: 14px; }
 .psa-chevron { margin-left: auto; flex: none; color: var(--accent); }
 .psa-hero { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: clamp(22px, 4vw, 40px); margin-bottom: 24px; }
 .psa-hero .work-heading { margin: 10px 0; }
-.psa-hero-mark { width: 88px; height: 88px; border-radius: 26px; }
+.psa-hero-mark { min-height: 72px; padding-inline: 14px; border-radius: 20px; }
 .psa-note { margin-bottom: 24px; }
 .psa-note a { color: #8f3517; text-decoration: underline; text-underline-offset: 3px; }
 .psa-crumb { display: inline-flex; align-items: center; gap: 8px; }
@@ -101,7 +102,8 @@
   .psa-row { grid-template-columns: 68px minmax(0,1fr) 17px; padding: 12px 13px; gap: 8px; }
   .psa-row-system { display: none; }
   .psa-hero { align-items: flex-start; flex-direction: column; gap: 14px; }
-  .psa-hero-mark { display: none; }
+  .psa-hero-mark { order: -1; min-height: 48px; padding-inline: 8px; border-radius: 14px; }
+  .psa-hero-mark svg { width: 26px; height: 26px; }
   .psa-toolbar { flex-direction: column; }
 }
 @media (prefers-reduced-motion: reduce) {

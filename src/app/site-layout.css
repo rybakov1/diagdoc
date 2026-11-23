@@ -140,7 +140,7 @@
 .home-category:hover { border-color: #c99178; box-shadow: 0 5px 16px #19283912; }
 .home-category strong { display: block; font-size: 1rem; font-weight: 700; line-height: 1.3; }
 .home-category small { display: block; margin-top: 4px; color: var(--secondary); font-size: .8125rem; line-height: 1.4; }
-.home-category-icon { flex: 0 0 42px; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 13px; background: var(--accent-soft); color: var(--accent); }
+.home-category-icon { flex: none; min-width: 42px; height: 42px; padding-inline: 7px; display: grid; place-items: center; border-radius: 13px; background: var(--accent-soft); color: var(--accent); }
 
 .home-editor {
   display: grid;
@@ -176,7 +176,7 @@
 
 @media (max-width: 520px) {
   .home-category { flex-direction: column; align-items: flex-start; gap: 9px; padding: 13px; }
-  .home-category-icon { flex-basis: 36px; width: 36px; height: 36px; border-radius: 10px; }
+  .home-category-icon { min-width: 36px; height: 36px; border-radius: 10px; }
   .home-editor { grid-template-columns: minmax(0, 1fr); justify-items: start; }
   .home-editor .work-grid { width: 100%; }
   .home-section .work-section-head { align-items: flex-start; flex-direction: column; gap: 8px; }

@@ -2,10 +2,11 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { Activity, ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, CarFront, CircleAlert, ClipboardList, Copy, FileText, GitBranch, Layers, LockKeyhole, Plus, Search, ShieldAlert, SlidersHorizontal, Wrench } from "lucide-react";
+import { Activity, ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, CircleAlert, ClipboardList, Copy, FileText, GitBranch, Layers, LockKeyhole, Plus, Search, ShieldAlert, SlidersHorizontal, Wrench } from "lucide-react";
 import { Background, Controls, ReactFlow } from "@xyflow/react";
 import { algorithms as seedAlgorithms, checks, dtcs, symptoms, articles, cases, vehicles } from "@/platform/seed";
 import { useWorkspace } from "@/platform/store";
+import { PsaBrandLogos } from "./psa-brand-logos";
 import { PsaEntry } from "./psa-entry";
 import type { Algorithm, AlgorithmGraph, AlgorithmNode } from "@/platform/models";
 const url=(path:string,id:string)=>`${path}?id=${encodeURIComponent(id)}`;
@@ -42,7 +43,7 @@ function SearchEverything({placeholder='Поиск по кодам, симпто
  ].filter(x=>`${x.title} ${x.type} ${x.keywords}`.toLowerCase().includes(q)).slice(0,8)},[q,algorithms]); return <div><SearchInput value={query} onChange={setQuery} placeholder={placeholder}/>{q&&<div className="work-search-results" aria-live="polite">{results.length?results.map(r=><Link key={r.id} href={r.href}><span>{r.title}</span><small>{r.type} ↗</small></Link>):<div className="work-empty" style={{padding:18}}>Совпадений в общем каталоге нет.</div>}{codeQuery&&<Link className="psa-search-link" href={`/codes/peugeot-citroen/?q=${encodeURIComponent(q)}`}>Проверить код в каталоге Peugeot и Citroën</Link>}</div>}</div>}
 const homeCategories = [
   { href: "/codes/", title: "Коды ошибок", description: "Расшифровки OBD‑II", icon: Activity },
-  { href: "/codes/peugeot-citroen/", title: "Peugeot и Citroën", description: "Коды и порядок проверки", icon: CarFront },
+  { href: "/codes/peugeot-citroen/", title: "Peugeot и Citroën", description: "Коды и порядок проверки", icon: PsaBrandLogos },
   { href: "/symptoms/", title: "Симптомы", description: "Поиск без кода ошибки", icon: SlidersHorizontal },
   { href: "/algorithms/", title: "Алгоритмы", description: "Маршруты диагностики", icon: GitBranch },
   { href: "/checks/", title: "Проверки", description: "Методики и инструменты", icon: Wrench },
@@ -78,7 +79,7 @@ export function Overview() {
         <div className="home-category-grid">
           {homeCategories.map(({ href, title, description, icon: Icon }) => (
             <Link href={href} key={href} className="home-category">
-              <span className="home-category-icon"><Icon size={21} aria-hidden="true" /></span>
+              <span className="home-category-icon" aria-hidden="true"><Icon size={21} /></span>
               <span><strong>{title}</strong><small>{description}</small></span>
             </Link>
           ))}

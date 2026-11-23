@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { CarFront, Info } from "lucide-react";
+import { Info } from "lucide-react";
+import { PsaBrandLogos } from "@/components/platform/psa-brand-logos";
 import { PsaCatalog } from "@/components/platform/psa-catalog";
 import { psaCatalogPath, psaCodes, psaVehicleDocs } from "@/data/psa-codes";
 import { pageMetadata } from "@/lib/seo";
@@ -20,7 +21,7 @@ export default function Page() {
           <h1 className="work-heading">Коды Peugeot и Citroën</h1>
           <p className="work-subtitle">Найдите свой код и посмотрите, какие параметры и цепи проверить в первую очередь.</p>
         </div>
-        <div className="psa-hero-mark" aria-hidden="true"><CarFront size={44} strokeWidth={1.45} /></div>
+        <PsaBrandLogos className="psa-hero-mark" size={36} />
       </header>
       <div className="work-demo psa-note">
         <Info aria-hidden="true" size={19} />
