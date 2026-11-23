@@ -21,7 +21,7 @@ export default function Page() {
           <h1 className="work-heading">Коды Peugeot и Citroën</h1>
           <p className="work-subtitle">Найдите свой код и посмотрите, какие параметры и цепи проверить в первую очередь.</p>
         </div>
-        <PsaBrandLogos className="psa-hero-mark" size={36} />
+        <PsaBrandLogos className="psa-hero-mark" size={48} />
       </header>
       <div className="work-demo psa-note">
         <Info aria-hidden="true" size={19} />
