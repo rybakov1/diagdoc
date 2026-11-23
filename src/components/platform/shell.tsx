@@ -1,15 +1,110 @@
 "use client";
+
+import { useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, BookOpen, BookMarked, Boxes, ClipboardList, FileText, GitBranch, Home, LogIn, Menu, Search, Settings, Stethoscope, Wrench, X } from "lucide-react";
-import { useState } from "react";
+import { Activity, LogIn, Menu, Search, X } from "lucide-react";
 import { useWorkspace } from "@/platform/store";
-const navigation = [
- {href:"/",label:"Обзор",icon:Home}, {href:"/codes/",label:"Коды ошибок",icon:Boxes}, {href:"/symptoms/",label:"Симптомы",icon:Activity}, {href:"/algorithms/",label:"Алгоритмы",icon:GitBranch}, {href:"/checks/",label:"Проверки",icon:Wrench}, {href:"/knowledge/",label:"База знаний",icon:BookOpen}, {href:"/cases/",label:"Практические случаи",icon:BookMarked}, {href:"/editor/",label:"Редактор",icon:FileText}, {href:"/diagnosis/",label:"Диагностика",icon:Stethoscope}, {href:"/settings/",label:"Настройки",icon:Settings},
+
+const mainLinks = [
+  { href: "/codes/", label: "Коды ошибок" },
+  { href: "/symptoms/", label: "Симптомы" },
+  { href: "/algorithms/", label: "Алгоритмы" },
+  { href: "/checks/", label: "Проверки" },
+  { href: "/knowledge/", label: "База знаний" },
 ];
-export function PlatformShell({children}:{children:React.ReactNode}) {
- const pathname=usePathname(); const {user,ready}=useWorkspace(); const [open,setOpen]=useState(false);
- return <div className="app-frame"><aside id="site-navigation" className={`app-sidebar ${open?"is-open":""}`}><div className="sidebar-top"><Link href="/" className="brand app-brand" onClick={()=>setOpen(false)}><span className="brand-mark"><Activity size={22} strokeWidth={2.5}/></span><span>diag<span className="brand-orange">doc</span><small>РАБОЧЕЕ ПРОСТРАНСТВО</small></span></Link><button className="mobile-close" onClick={()=>setOpen(false)} aria-label="Закрыть меню"><X size={20}/></button></div><div className="side-section">РАБОЧЕЕ ПРОСТРАНСТВО</div><nav aria-label="Основная навигация" className="side-nav">{navigation.map(({href,label,icon:Icon})=><Link key={href} href={href} className={(href==="/"?pathname==="/":pathname.startsWith(href))?"active":""} onClick={()=>setOpen(false)}><Icon size={18}/><span>{label}</span>{href==="/diagnosis/"&&<small>СКОРО</small>}</Link>)}</nav><div className="side-info"><span className="side-info-icon"><ClipboardList size={16}/></span><div><b>Локальное демо</b><p>Данные хранятся только в этом браузере.</p></div></div><div className="side-footer"><Link href="/about/">О проекте</Link><Link href="/privacy/">Конфиденциальность</Link><Link href="/dashboard/">Индикаторы</Link><Link href="/guides/">Инструкции</Link></div></aside>{open&&<button className="nav-overlay" aria-label="Закрыть меню" onClick={()=>setOpen(false)}/>}<div className="app-main"><header className="app-topbar"><button className="menu-button" onClick={()=>setOpen(true)} aria-label="Открыть меню" aria-expanded={open} aria-controls="site-navigation"><Menu size={22}/></button><span className="topbar-caption">ПЛАТФОРМА ДИАГНОСТИЧЕСКИХ ЗНАНИЙ</span><div className="topbar-actions"><Link className="top-search" href="/search/" aria-label="Поиск по базе"><Search size={17}/><span>Поиск по базе</span></Link><Link className="top-user" href="/settings/" aria-label={ready&&user ? `Профиль: ${user.name}` : "Войти в демо"}><span className="user-avatar">{ready&&user?user.name.slice(0,1):<LogIn size={15}/>}</span><span>{ready&&user?user.name:"Войти в демо"}</span></Link></div></header><main className="app-content">{children}</main></div></div>
+
+const footerLinks = [
+  { title: "Справочник", links: [
+    mainLinks[0], { href: "/codes/peugeot-citroen/", label: "Peugeot и Citroën" }, mainLinks[1],
+    { href: "/dashboard/", label: "Индикаторы панели" },
+  ] },
+  { title: "Материалы", links: [
+    mainLinks[2], mainLinks[3], mainLinks[4], { href: "/cases/", label: "Практические случаи" },
+    { href: "/guides/", label: "Инструкции" },
+  ] },
+  { title: "DiagDoc", links: [
+    { href: "/editor/", label: "Редактор алгоритмов" }, { href: "/diagnosis/", label: "Диагностика" },
+    { href: "/about/", label: "О проекте" }, { href: "/privacy/", label: "Конфиденциальность" },
+  ] },
+];
+
+function Brand() {
+  return (
+    <Link href="/" className="brand site-brand" aria-label="DiagDoc — главная">
+      <span className="brand-mark"><Activity size={22} strokeWidth={2.5} aria-hidden="true" /></span>
+      <span>Diag<span className="brand-orange">Doc</span></span>
+    </Link>
+  );
 }
 
+export function PlatformShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const { user, ready } = useWorkspace();
+  const [menuPath, setMenuPath] = useState<string | null>(null);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const menuOpen = menuPath === pathname;
+  const profileName = ready && user ? user.name : "Войти в демо";
 
+  function isActive(href: string) {
+    if (href === "/codes/") return pathname.startsWith(href) || pathname.startsWith("/references/dtc/");
+    if (href === "/symptoms/") return pathname.startsWith(href) || pathname.startsWith("/references/symptom/");
+    return pathname.startsWith(href);
+  }
+
+  return (
+    <div className="app-frame">
+      <a href="#main-content" className="site-skip">К содержанию</a>
+      <header className="site-header" onKeyDown={event => {
+        if (event.key === "Escape" && menuOpen) {
+          setMenuPath(null);
+          menuButton.current?.focus();
+        }
+      }}>
+        <div className="site-container site-header-inner">
+          <Brand />
+          <div className="site-header-actions">
+            <Link href="/search/" className="site-header-search" aria-label="Поиск по сайту">
+              <Search size={18} aria-hidden="true" /><span>Поиск</span>
+            </Link>
+            <Link href="/settings/" className="site-header-profile" aria-label={user ? `Профиль: ${profileName}` : profileName}>
+              {user ? <span aria-hidden="true" className="site-avatar">{user.name.slice(0, 1)}</span> : <LogIn size={18} aria-hidden="true" />}
+              <span className="site-profile-label">{profileName}</span>
+            </Link>
+            <button ref={menuButton} type="button" className="site-menu-toggle" aria-controls="site-navigation" aria-expanded={menuOpen}
+              aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"} onClick={() => setMenuPath(menuOpen ? null : pathname)}>
+              {menuOpen ? <X size={23} aria-hidden="true" /> : <Menu size={23} aria-hidden="true" />}
+            </button>
+          </div>
+          <nav id="site-navigation" aria-label="Основное меню" className={`site-nav${menuOpen ? " is-open" : ""}`}>
+            {mainLinks.map(({ href, label }) => (
+              <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined}
+                className={isActive(href) ? "active" : undefined} onClick={() => setMenuPath(null)}>{label}</Link>
+            ))}
+          </nav>
+        </div>
+      </header>
+      <main id="main-content" className="app-content">{children}</main>
+      <footer className="site-footer">
+        <div className="site-container">
+          <div className="site-footer-grid">
+            <div className="site-footer-intro">
+              <Brand />
+              <p>Справочник автомобильной диагностики. От кода ошибки и симптома к обоснованной проверке.</p>
+            </div>
+            {footerLinks.map(group => (
+              <nav key={group.title} aria-label={group.title + " — подвал"} className="site-footer-links">
+                <h2>{group.title}</h2>
+                {group.links.map(({ href, label }) => <Link key={href} href={href}>{label}</Link>)}
+              </nav>
+            ))}
+          </div>
+          <div className="site-footer-bottom">
+            <span>© {new Date().getFullYear()} DiagDoc</span>
+            <span>Черновики редактора хранятся в браузере.</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { Activity, ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, CircleAlert, ClipboardList, Copy, FileText, GitBranch, Layers, LockKeyhole, Plus, Search, ShieldAlert, SlidersHorizontal, Wrench } from "lucide-react";
+import { Activity, ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, CarFront, CircleAlert, ClipboardList, Copy, FileText, GitBranch, Layers, LockKeyhole, Plus, Search, ShieldAlert, SlidersHorizontal, Wrench } from "lucide-react";
 import { Background, Controls, ReactFlow } from "@xyflow/react";
 import { algorithms as seedAlgorithms, checks, dtcs, symptoms, articles, cases, vehicles } from "@/platform/seed";
 import { useWorkspace } from "@/platform/store";
@@ -40,7 +40,69 @@ function SearchEverything({placeholder='Поиск по кодам, симпто
  ...cases.map(x=>({id:`k-${x.id}`,title:x.title,type:'Демо-кейс',href:caseUrl(x.id),keywords:x.story.join(' ')})),
  ...articles.map(x=>({id:`z-${x.id}`,title:x.title,type:'База знаний',href:articleUrl(x.id),keywords:`${x.summary} ${x.tags.join(' ')}`})),
  ].filter(x=>`${x.title} ${x.type} ${x.keywords}`.toLowerCase().includes(q)).slice(0,8)},[q,algorithms]); return <div><SearchInput value={query} onChange={setQuery} placeholder={placeholder}/>{q&&<div className="work-search-results" aria-live="polite">{results.length?results.map(r=><Link key={r.id} href={r.href}><span>{r.title}</span><small>{r.type} ↗</small></Link>):<div className="work-empty" style={{padding:18}}>Совпадений в общем каталоге нет.</div>}{codeQuery&&<Link className="psa-search-link" href={`/codes/peugeot-citroen/?q=${encodeURIComponent(q)}`}>Проверить код в каталоге Peugeot и Citroën</Link>}</div>}</div>}
-export function Overview(){const {algorithms,user,ready}=useWorkspace();const published=algorithms.filter(x=>x.status==='published').slice().sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));const drafts=user?algorithms.filter(x=>x.status==='draft'&&x.authorId===user.id):[];return <div className="workspace"><div className="work-hero"><div className="work-hero-content"><div className="work-kicker">РАБОЧЕЕ ПРОСТРАНСТВО ДИАГНОСТА</div><h1>От симптома<br/>к следующей проверке<span className="orange">.</span></h1><p>Алгоритмы, методики и практические случаи для последовательной работы с неисправностью.</p><div style={{maxWidth:600,marginTop:23}}><SearchEverything placeholder="Введите код, симптом или название проверки"/></div></div></div><div className="work-section"><div className="work-section-head"><div><span className="work-kicker">БЫСТРЫЙ ДОСТУП</span><h2>С чего начнём</h2></div></div><div className="work-links"><Link href="/algorithms/" className="work-quick"><GitBranch size={21}/> Алгоритмы <ArrowUpRight size={14}/></Link><Link href="/codes/" className="work-quick"><Activity size={21}/> Коды ошибок <ArrowUpRight size={14}/></Link><Link href="/checks/" className="work-quick"><Wrench size={21}/> Проверки <ArrowUpRight size={14}/></Link><Link href="/editor/" className="work-quick"><Plus size={21}/> Новый алгоритм <ArrowUpRight size={14}/></Link></div></div><div className="work-section"><PsaEntry/></div><div className="work-section"><div className="work-section-head"><div><span className="work-kicker">ПОДБОРКА DIAGDOC</span><h2>Демо-алгоритмы</h2><p>Учебные маршруты, не заводская документация.</p></div><Link className="work-text-link" href="/algorithms/">Все алгоритмы <ArrowRight size={15}/></Link></div><div className="work-grid">{published.slice(0,3).map(a=><AlgorithmCard key={a.id} item={a}/>)}</div></div>{ready&&user&&<div className="work-section"><div className="work-section-head"><div><span className="work-kicker">ВАШЕ РАБОЧЕЕ ПРОСТРАНСТВО</span><h2>Мои черновики</h2></div><Link className="work-text-link" href="/editor/">Создать <Plus size={15}/></Link></div>{drafts.length?<div className="work-grid">{drafts.map(a=><AlgorithmCard key={a.id} item={a}/>)}</div>:<Empty>Пока нет черновиков. Создайте алгоритм или скопируйте учебный маршрут.</Empty>}</div>}<div className="work-section"><DemoNotice>Материалы — учебные примеры, не OEM. Локальные публикации и черновики видны только в этом браузере.</DemoNotice></div></div>}
+const homeCategories = [
+  { href: "/codes/", title: "Коды ошибок", description: "Расшифровки OBD‑II", icon: Activity },
+  { href: "/codes/peugeot-citroen/", title: "Peugeot и Citroën", description: "Коды и порядок проверки", icon: CarFront },
+  { href: "/symptoms/", title: "Симптомы", description: "Поиск без кода ошибки", icon: SlidersHorizontal },
+  { href: "/algorithms/", title: "Алгоритмы", description: "Маршруты диагностики", icon: GitBranch },
+  { href: "/checks/", title: "Проверки", description: "Методики и инструменты", icon: Wrench },
+  { href: "/knowledge/", title: "База знаний", description: "Статьи по диагностике", icon: BookOpen },
+  { href: "/cases/", title: "Практические случаи", description: "Разбор учебных примеров", icon: ClipboardList },
+  { href: "/dashboard/", title: "Индикаторы панели", description: "Что означают сигналы", icon: CircleAlert },
+];
+
+export function Overview() {
+  const { algorithms, user, ready } = useWorkspace();
+  const published = algorithms.filter(item => item.status === "published")
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  const drafts = user ? algorithms.filter(item => item.status === "draft" && item.authorId === user.id) : [];
+
+  return (
+    <div className="workspace home-page">
+      <section className="work-hero home-hero">
+        <div className="work-hero-content">
+          <h1>Справочник автомобильной диагностики</h1>
+          <p>Найдите расшифровку кода, начните с симптома или выберите готовый порядок проверки.</p>
+          <div className="home-search">
+            <SearchEverything placeholder="Код ошибки или симптом" />
+            <div className="home-search-examples" aria-label="Примеры поиска">
+              <Link href="/references/dtc/p0301/">P0301</Link>
+              <Link href="/codes/peugeot-citroen/p1351/">P1351 Peugeot/Citroën</Link>
+              <Link href="/references/symptom/no-start/">Двигатель не запускается</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="work-section home-section" aria-labelledby="home-categories">
+        <div className="work-section-head"><h2 id="home-categories">Разделы справочника</h2></div>
+        <div className="home-category-grid">
+          {homeCategories.map(({ href, title, description, icon: Icon }) => (
+            <Link href={href} key={href} className="home-category">
+              <span className="home-category-icon"><Icon size={21} aria-hidden="true" /></span>
+              <span><strong>{title}</strong><small>{description}</small></span>
+            </Link>
+          ))}
+        </div>
+      </section>
+      <section className="work-section home-section" aria-labelledby="home-algorithms">
+        <div className="work-section-head">
+          <div><h2 id="home-algorithms">Учебные алгоритмы</h2><p>Пошаговые маршруты с условиями и связанными проверками.</p></div>
+          <Link className="work-text-link" href="/algorithms/">Все алгоритмы</Link>
+        </div>
+        {published.length ? <div className="work-grid">{published.slice(0, 3).map(item => <AlgorithmCard key={item.id} item={item} />)}</div>
+          : <Empty>Пока нет доступных алгоритмов.</Empty>}
+      </section>
+      <section className="work-panel home-editor" aria-labelledby="home-editor">
+        <div>
+          <h2 id="home-editor">{ready && user ? "Мои черновики" : "Редактор алгоритмов"}</h2>
+          <p>{ready && user ? "Продолжите работу над черновиком или создайте новый." : "Соберите свой маршрут проверки из шагов и переходов."}</p>
+        </div>
+        <Link href="/editor/" className="work-button-secondary"><Plus size={17} aria-hidden="true" /> Открыть редактор</Link>
+        {drafts.length > 0 && <div className="work-grid">{drafts.map(item => <AlgorithmCard key={item.id} item={item} />)}</div>}
+      </section>
+    </div>
+  );
+}
 export function SearchPage(){return <div className="workspace"><PageHead eyebrow="БЫСТРЫЙ ПОИСК" title="Поиск по базе" description="Коды, симптомы, алгоритмы, проверки, статьи и учебные случаи."/><SearchEverything/><div className="work-section"><DemoNotice/></div></div>}
 export function AlgorithmsPage(){const {algorithms}=useWorkspace();const [q,setQ]=useState('');const [system,setSystem]=useState('Все системы');const publicItems=algorithms.filter(a=>a.status==='published');const systems=Array.from(new Set(publicItems.map(a=>a.system)));const filtered=publicItems.filter(a=>(system==='Все системы'||a.system===system)&&algorithmSearchText(a).toLowerCase().includes(q.toLowerCase().trim()));return <div className="workspace"><PageHead eyebrow="КАТАЛОГ МАТЕРИАЛОВ" title="Алгоритмы" description="Последовательные маршруты проверки гипотез — от исходных данных до следующего шага." action={<Link className="work-button" href="/editor/"><Plus size={16}/> Новый алгоритм</Link>}/><DemoNotice/><div className="work-toolbar"><SearchInput value={q} onChange={setQ} placeholder="Название, код или симптом"/><select className="work-select" aria-label="Система" value={system} onChange={e=>setSystem(e.target.value)}><option>Все системы</option>{systems.map(x=><option key={x}>{x}</option>)}</select></div><div className="work-section-head"><p>МАТЕРИАЛОВ: {filtered.length}</p></div>{filtered.length?<div className="work-grid">{filtered.map(a=><AlgorithmCard key={a.id} item={a}/>)}</div>:<Empty>Подходящих алгоритмов пока нет. Измените запрос или фильтр.</Empty>}</div>}
 export function AlgorithmPage(){const id=useSearchParams().get('id')||'';return <AlgorithmDetail id={id}/>;}

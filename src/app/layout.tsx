@@ -5,6 +5,7 @@ import "./globals.css";
 import "./platform.css";
 import "@xyflow/react/dist/style.css";
 import "./refinement.css";
+import "./site-layout.css";
 export const metadata: Metadata = { title: { default: "DiagDoc — платформа диагностических знаний", template: "%s | DiagDoc" }, description: "Алгоритмы, проверки и практические случаи автомобильной диагностики." };
 export default function RootLayout({children}:{children:React.ReactNode}) { return <html lang="ru"><body><WorkspaceProvider><PlatformShell>{children}</PlatformShell></WorkspaceProvider></body></html> }
 
