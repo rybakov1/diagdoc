@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { codes, symptoms, indicators, guides } from "../data/content";
+import { psaCatalogPath, psaCodes } from "../data/psa-codes";
 import { absoluteUrl } from "../lib/seo";
 import { algorithms as platformAlgorithms, checks as platformChecks, dtcs as platformDtcs, symptoms as platformSymptoms, articles as platformArticles, cases as platformCases } from "../platform/seed";
 
@@ -14,6 +15,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     ...pages.map((path) => ({ url: absoluteUrl(path) })),
+    { url: absoluteUrl(psaCatalogPath) },
+    ...psaCodes.map(item => ({ url: absoluteUrl(`${psaCatalogPath}${item.code.toLowerCase()}/`) })),
     ...platformAlgorithms.filter(item => item.status === "published").map(item => ({ url: absoluteUrl(`/algorithms/${item.id}/`), lastModified: item.updatedAt })),
     ...platformChecks.map(item => ({ url: absoluteUrl(`/checks/${item.id}/`) })),
     ...platformArticles.map(item => ({ url: absoluteUrl(`/knowledge/${item.id}/`) })),
